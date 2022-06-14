@@ -186,4 +186,12 @@ else()
 	message("--- not building dmvio_dataset, since either don't have openCV or Pangolin.")
 endif()
 
+find_package(realsense2 QUIET)
+if(realsense2_FOUND)
+	message("--- compiling dmvio_realsense.")
+	add_executable(dmvio_rs_d455 ${PROJECT_SOURCE_DIR}/src/main_dmvio_rs_d455.cpp)
+	set(DMVIO_LINKED_LIBRARIES boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} gtsam ${YAML_CPP_LIBRARIES} ${STACKTRACE_LIBRARIES})
+	target_link_libraries(dmvio_rs_d455 dmvio ${DMVIO_LINKED_LIBRARIES} realsense2::realsense2)
+endif()
+
 add_subdirectory(test)
