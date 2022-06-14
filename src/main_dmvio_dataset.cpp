@@ -35,6 +35,7 @@
 #include "IOWrapper/Output3DWrapper.h"
 #include "IOWrapper/ImageDisplay.h"
 
+#include <opencv2/core.hpp>
 
 #include <boost/thread.hpp>
 #include "dso/util/settings.h"
@@ -49,6 +50,7 @@
 #include "FullSystem/PixelSelector2.h"
 
 #include <util/SettingsUtil.h>
+#include <opencv2/highgui.hpp>
 
 #include "IOWrapper/Pangolin/PangolinDSOViewer.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
@@ -606,7 +608,7 @@ void run(ImageFolderReader* reader, IOWrap::PangolinDSOViewer* viewer)
         tmlog.flush();
         tmlog.close();
     }
-
+    while(1){ if(cv::waitKey(100)==27)break; }
     for(IOWrap::Output3DWrapper* ow : fullSystem->outputWrapper)
     {
         ow->join();
