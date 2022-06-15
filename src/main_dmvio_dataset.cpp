@@ -66,8 +66,8 @@ bool reverse = false;
 int start = 0;
 int end = 100000;
 float playbackSpeed = 0;    // 0 for linearize (play as fast as possible, while sequentializing tracking & mapping). otherwise, factor on timestamps.
-bool preload = false;
-int maxPreloadImages = 0; // If set we only preload if there are less images to be loade.
+bool preload = true;
+int maxPreloadImages = 10; // If set we only preload if there are less images to be loade.
 bool useSampleOutput = false;
 
 
@@ -608,7 +608,7 @@ void run(ImageFolderReader* reader, IOWrap::PangolinDSOViewer* viewer)
         tmlog.flush();
         tmlog.close();
     }
-    while(1){ if(cv::waitKey(100)==27)break; }
+    while(1){ if(dso::IOWrap::waitKey(100)==27)break; }
     for(IOWrap::Output3DWrapper* ow : fullSystem->outputWrapper)
     {
         ow->join();

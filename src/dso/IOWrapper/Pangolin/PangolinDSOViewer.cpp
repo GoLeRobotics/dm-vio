@@ -98,7 +98,7 @@ void PangolinDSOViewer::run()
 	// 3D visualization
 	pangolin::OpenGlRenderState Visualization3D_camera(
 		pangolin::ProjectionMatrix(w,h,400,400,w/2,h/2,0.1,1000),
-		pangolin::ModelViewLookAt(-0,-5,-10, 0,0,0, pangolin::AxisNegY)
+		pangolin::ModelViewLookAt(-0,2,-3, 0,0,0, pangolin::AxisNegY)
 		);
 
 	pangolin::View& Visualization3D_display = pangolin::CreateDisplay()
@@ -200,7 +200,19 @@ void PangolinDSOViewer::run()
 						this->settings_pointCloudMode, this->settings_minRelBS, this->settings_sparsity));
 				fh->drawPC(1);
 			}
-			if(this->settings_showCurrentCamera) currentCam->drawCam(2,0,0.2);
+			if(this->settings_showCurrentCamera){
+                pangolin::OpenGlMatrix Twc;
+                Twc.SetIdentity();
+                Sophus::Matrix4f m = currentCam->camToWorld.matrix().cast<float>();
+                for(int i = 0; i<4; i++){
+                    Twc(0, i) = m(0, i);
+                    Twc(1, i) = m(1, i);
+                    Twc(2, i) = m(2, i);
+                    Twc(3, i) = m(3, i);
+                }
+                Visualization3D_camera.Follow(Twc);
+                currentCam->drawCam(2,0,0.05);
+			}
 
 			float green[3] = {0,1,0};
 			currentGTCam->drawCam(2, green, 0.2);

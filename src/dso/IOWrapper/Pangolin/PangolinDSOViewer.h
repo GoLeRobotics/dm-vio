@@ -103,7 +103,6 @@ private:
 	int w,h;
 
 
-
 	// images rendering
 	boost::mutex openImagesMutex;
 	MinimalImageB3* internalVideoImg;
