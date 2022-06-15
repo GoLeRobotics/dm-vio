@@ -68,7 +68,7 @@ int end = 100000;
 float playbackSpeed = 0;    // 0 for linearize (play as fast as possible, while sequentializing tracking & mapping). otherwise, factor on timestamps.
 bool preload = true;
 int maxPreloadImages = 10; // If set we only preload if there are less images to be loade.
-bool useSampleOutput = false;
+bool useSampleOutput = true;
 
 
 int mode = 0;
@@ -607,6 +607,13 @@ void run(ImageFolderReader* reader, IOWrap::PangolinDSOViewer* viewer)
                  (float) reader->getNumImages() << "\n";
         tmlog.flush();
         tmlog.close();
+    }
+    if (!isPCLfileClose)
+    {
+        ((IOWrap::SampleOutputWrapper*)fullSystem->outputWrapper[1])->pclFile.flush();
+        ((IOWrap::SampleOutputWrapper*)fullSystem->outputWrapper[1])->pclFile.close();
+        isPCLfileClose = true;
+        printf("pcl tmp file is auto closed.\n");
     }
     while(1){ if(dso::IOWrap::waitKey(100)==27)break; }
     for(IOWrap::Output3DWrapper* ow : fullSystem->outputWrapper)
