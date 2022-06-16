@@ -4,9 +4,9 @@
  * @brief realsense d435i 的在线运行
  * @version 0.1
  * @date 2022-06-13
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 #include <signal.h>
@@ -323,11 +323,10 @@ void run(IOWrap::PangolinDSOViewer* viewer)
         std::unique_ptr<dmvio::IMUData> imuData = std::make_unique<dmvio::IMUData>();;
         ImageAndExposure* img = reader->getImageIMU(image_idx, imuData);
         std::cout << std::fixed << "Get Input Data " << img->exposure_time << ", " << img->timestamp<< ", imu size: " << imuData->size() << std::endl;
-
-        fullSystem->addActiveFrame(img, image_idx, imuData.get(), 0);
-        // fullSystem->addActiveFrame(img, image_idx, 0, 0);
-
-        image_idx++;
+        if(imuData->size() != 0){
+            fullSystem->addActiveFrame(img, image_idx, imuData.get(), 0);
+            image_idx++;
+        }
 
         delete img;
 

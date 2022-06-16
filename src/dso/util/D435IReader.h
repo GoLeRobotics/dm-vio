@@ -4,9 +4,9 @@
  * @brief 从D435I Realsense实时获取数据
  * @version 0.1
  * @date 2022-06-14
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 #pragma once
@@ -35,7 +35,7 @@ using namespace dso;
 
 /**
  * @brief D435I 数据流的获取
- * 
+ *
  */
 class D435IReader
 {
@@ -66,10 +66,10 @@ public:
 
     /**
      * @brief realsense D435I 的初始化
-     * 
-     * @param pipe 
-     * @return true 
-     * @return false 
+     *
+     * @param pipe
+     * @return true
+     * @return false
      */
     bool Initialize(rs2::pipeline& pipe){
 
@@ -119,7 +119,7 @@ public:
                 }
             }
         };
-    
+
         rs2::context ctx;
         rs2::device_list devices = ctx.query_devices();
         rs2::device selected_device;
@@ -202,13 +202,13 @@ public:
 		getCalibMono(K, w_out, h_out);
 		setGlobalCalib(w_out, h_out, K);
 	}
-    
+
     /**
      * @brief 从相机获得image与IMU数据
-     * 
-     * @param idx 
-     * @param imuData 
-     * @return ImageAndExposure* 
+     *
+     * @param idx
+     * @param imuData
+     * @return ImageAndExposure*
      */
 	ImageAndExposure* getImageIMU(int& idx, std::unique_ptr<dmvio::IMUData>& imuData)
 	{
@@ -231,9 +231,11 @@ public:
         delete minimg;
 
         double old_accel_timestamp = -1;
-        
-        while(v_accel_timestamp_.front() > v_gyro_timestamp_.front())
+
+        while(v_accel_timestamp_.front() > v_gyro_timestamp_.front()){
             v_gyro_timestamp_.pop_front();
+            v_gyro_data_.pop_front();
+        }
 
         while(v_gyro_timestamp_.size() > 0 && v_accel_timestamp_.size() > 0 &&                                                  // 有值
             v_gyro_timestamp_.front() < image_timestamp_ &&                                                                     // 当前图片之前的数据，以gyro做基准
@@ -281,13 +283,13 @@ private:
 
     /**
      * @brief 加速度计的插值
-     * 
-     * @param target_time 
-     * @param current_data 
-     * @param current_time 
-     * @param prev_data 
-     * @param prev_time 
-     * @return rs2_vector 
+     *
+     * @param target_time
+     * @param current_data
+     * @param current_time
+     * @param prev_data
+     * @param prev_time
+     * @return rs2_vector
      */
     rs2_vector interpolateMeasure(const double target_time, const rs2_vector current_data, const double current_time, const rs2_vector prev_data, const double prev_time)
     {
@@ -327,9 +329,9 @@ private:
 
     /**
      * @brief 获取相机的配置支持参数
-     * 
-     * @param sensor 
-     * @return rs2_option 
+     *
+     * @param sensor
+     * @return rs2_option
      */
     static rs2_option get_sensor_option(const rs2::sensor& sensor)
     {
