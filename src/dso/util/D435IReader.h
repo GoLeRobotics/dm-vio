@@ -231,6 +231,10 @@ public:
         delete minimg;
 
         double old_accel_timestamp = -1;
+        
+        while(v_accel_timestamp_.front() > v_gyro_timestamp_.front())
+            v_gyro_timestamp_.pop_front();
+
         while(v_gyro_timestamp_.size() > 0 && v_accel_timestamp_.size() > 0 &&                                                  // 有值
             v_gyro_timestamp_.front() < image_timestamp_ &&                                                                     // 当前图片之前的数据，以gyro做基准
             v_accel_timestamp_.front() < v_gyro_timestamp_.front() && v_accel_timestamp_.back() > v_gyro_timestamp_.front()){   // accel有插值的timestamp数据
