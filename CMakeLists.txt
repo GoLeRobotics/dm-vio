@@ -118,13 +118,13 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/thirdparty/sse2neon
   ${EIGEN3_INCLUDE_DIR}
   ${GTSAM_INCLUDE_DIR}
-) 
+)
 
 
 # decide if we have pangolin
 if (Pangolin_FOUND)
 	message("--- found PANGOLIN, compiling with pangolin library.")
-	include_directories( ${Pangolin_INCLUDE_DIRS} ) 
+	include_directories( ${Pangolin_INCLUDE_DIRS} )
 	set(dso_pangolin_SOURCE_FILES
 			${DSO_SOURCE_DIR}/IOWrapper/Pangolin/KeyFrameDisplay.cpp
 			${DSO_SOURCE_DIR}/IOWrapper/Pangolin/PangolinDSOViewer.cpp)
@@ -157,7 +157,7 @@ endif ()
 if (LIBZIP_LIBRARY)
 	message("--- found ziplib (${LIBZIP_VERSION}), compiling with zip capability.")
 	add_definitions(-DHAS_ZIPLIB=1)
-	include_directories( ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF} ) 
+	include_directories( ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF} )
 else()
 	message("--- not found ziplib (${LIBZIP_LIBRARY}), compiling without zip capability.")
 	set(LIBZIP_LIBRARY "")
@@ -193,10 +193,10 @@ if (realsense2_FOUND AND OpenCV_FOUND AND Pangolin_FOUND)
 	add_executable(dmvio_d435i ${PROJECT_SOURCE_DIR}/src/main_dmvio_realsense_D435I.cpp)
 	set(DMVIO_LINKED_LIBRARIES boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} gtsam ${YAML_CPP_LIBRARIES} ${STACKTRACE_LIBRARIES})
     target_link_libraries(dmvio_d435i dmvio ${DMVIO_LINKED_LIBRARIES} ${realsense2_LIBRARY})
-	message("--- compiling d455_online.")
-	add_executable(dmvio_d455 ${PROJECT_SOURCE_DIR}/src/main_dmvio_realsense_D455.cpp)
-	set(DMVIO_LINKED_LIBRARIES boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} gtsam ${YAML_CPP_LIBRARIES} ${STACKTRACE_LIBRARIES})
-	target_link_libraries(dmvio_d455 dmvio ${DMVIO_LINKED_LIBRARIES} ${realsense2_LIBRARY})
+	# message("--- compiling d455_online.")
+	# add_executable(dmvio_d455 ${PROJECT_SOURCE_DIR}/src/main_dmvio_realsense_D455.cpp)
+	# set(DMVIO_LINKED_LIBRARIES boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} gtsam ${YAML_CPP_LIBRARIES} ${STACKTRACE_LIBRARIES})
+	# target_link_libraries(dmvio_d455 dmvio ${DMVIO_LINKED_LIBRARIES} ${realsense2_LIBRARY})
 else()
 	message("--- not building d435i, since either don't have openCV or Pangolin.")
 endif()
