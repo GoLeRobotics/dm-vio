@@ -20,3 +20,5 @@ result/
 *eigenPLog.txt
 *nullspacesLog.txt
 *run*.sh
+*usedSettingsdso.txt
+*factoryCalibrationT265Camera.txt
