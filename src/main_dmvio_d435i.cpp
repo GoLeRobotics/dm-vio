@@ -104,6 +104,12 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
     dmvio::FrameSkippingStrategy frameSkipping(frameSkippingSettings);
     // frameSkipping registers as an outputWrapper to get notified of changes of the system status.
     fullSystem->outputWrapper.push_back(&frameSkipping);
+    std::unique_ptr<IOWrap::SampleOutputWrapper> sampleOutPutWrapper;
+    if(useSampleOutput)
+    {
+        sampleOutPutWrapper.reset(new IOWrap::SampleOutputWrapper());
+        fullSystem->outputWrapper.push_back(sampleOutPutWrapper.get());
+    }
 
     int ii = 0;
     int lastResetIndex = 0;
@@ -165,6 +171,14 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
 
     dmvio::TimeMeasurement::saveResults(imuSettings.resultsPrefix + "timings.txt");
 
+    if (!isPCLfileClose)
+    {
+        ((IOWrap::SampleOutputWrapper*)fullSystem->outputWrapper[1])->pclFile.flush();
+        ((IOWrap::SampleOutputWrapper*)fullSystem->outputWrapper[1])->pclFile.close();
+        isPCLfileClose = true;
+        printf("pcl tmp file is auto closed.\n");
+    }
+    
     for(IOWrap::Output3DWrapper* ow : fullSystem->outputWrapper)
     {
         ow->join();
