@@ -320,13 +320,13 @@ void run(IOWrap::PangolinDSOViewer* viewer)
             gettimeofday(&tv_start, NULL);
             started = clock();
         }
-        std::unique_ptr<dmvio::IMUData> imuData = std::make_unique<dmvio::IMUData>();;
+        std::unique_ptr<dmvio::IMUData> imuData = std::make_unique<dmvio::IMUData>();
         ImageAndExposure* img = reader->getImageIMU(image_idx, imuData);
-        std::cout << std::fixed << "Get Input Data " << img->exposure_time << ", " << img->timestamp<< ", imu size: " << imuData->size() << std::endl;
         if(imuData->size() != 0){
             fullSystem->addActiveFrame(img, image_idx, imuData.get(), 0);
             image_idx++;
         }
+        std::cout << std::fixed << "Get Input Data and Sent it to system" << img->exposure_time << ", " << img->timestamp<< ", imu size: " << imuData->size() << std::endl;
 
         delete img;
 

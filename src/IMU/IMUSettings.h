@@ -49,9 +49,9 @@ public:
     IMUInitSettings initSettings; // settings for the IMU initializer.
     double maxTimeBetweenInitFrames = 100000.0; // Maximum time between the first 2 frames for DSO.
 
-    // Don't add IMU data between the first two keyframes. Not relevant when the IMU initializer is active (unless
+    // Don't add IMU data between the first two keyframes. Should not be set when the IMU initializer is active (unless
     // disableVIOUntilFirstInit=false).
-    bool skipFirstKeyframe = true;
+    bool skipFirstKeyframe = false;
 
     // Weight wrt DSO.
     double setting_weightDSOCoarse = 1.0 / 1000; // DSO weight for coarse tracking.
@@ -116,10 +116,11 @@ public:
     IMUCalibration();
 
     IMUCalibration(std::string settingsFilename);
-
+    IMUCalibration(const Sophus::SE3d& tCamImu);
     void loadFromFile(std::string settingsFilename);
+    void saveToFile(std::string filename); // Save T_cam_imu to as a camchain.yaml.
 
-    // The noise values are registered as settings so they can also be set from commandline and from the settings yaml.
+    // The noise values are registered as settings so they can be set from commandline and from the settings yaml.
     void registerArgs(dmvio::SettingsUtil& set);
 
     Sophus::SE3d T_cam_imu;

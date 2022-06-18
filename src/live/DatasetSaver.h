@@ -20,32 +20,51 @@
 * along with DM-VIO. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AugmentedScatter_hpp
-#define AugmentedScatter_hpp
+#ifndef DMVIO_DATASETSAVER_H
+#define DMVIO_DATASETSAVER_H
 
-#include <stdio.h>
-
-#include <gtsam/nonlinear/LinearContainerFactor.h>
-
-#include "util/NumType.h"
-#include "OptimizationBackend/EnergyFunctionalStructs.h"
-
-#include <gtsam/linear/Scatter.h>
+#include <string>
+#include <opencv2/core/mat.hpp>
+#include <mutex>
+#include <deque>
+#include <fstream>
+#include <thread>
+#include <condition_variable>
 
 namespace dmvio
 {
-class AugmentedScatter : public gtsam::Scatter
+
+// Helper for recording live data to file.
+class DatasetSaver
 {
 public:
-    // Scatter that can additionally handle keys that don't exist in the factor graph. For those keys the dimension must be specified in keyDimMap
-    AugmentedScatter(const gtsam::GaussianFactorGraph& gfg,boost::optional<const gtsam::Ordering&> ordering, const std::map<gtsam::Key, size_t>& keyDimMap);
+    DatasetSaver(std::string saveFolder);
 
-    iterator findNew(gtsam::Key key);
+    // timestamp in seconds, exposure in milliseconds.
+    void addImage(cv::Mat mat, double timestamp, double exposure);
 
-    std::pair<gtsam::Matrix, gtsam::Vector> computeHessian(const gtsam::GaussianFactorGraph& gfg);
-    gtsam::Matrix computeAugmentedHessian(const gtsam::GaussianFactorGraph& gfg);
+    void addIMUData(double timestamp, std::vector<float> accData, std::vector<float> gyrData);
+
+    void saveImagesWorker();
+
+    void end();
+
+private:
+    std::string imgSaveFolder;
+
+    std::ofstream timesFile, imuFile;
+
+    std::thread imageSaveThread;
+
+    // protects image queue.
+    std::mutex mutex;
+    std::condition_variable frameArrivedCond;
+    std::deque<std::tuple<cv::Mat, double, double>> imageQueue;
+
+    bool running = true;
+
 };
+
+
 }
-
-
-#endif /* AugmentedScatter_hpp */
+#endif //DMVIO_DATASETSAVER_H
