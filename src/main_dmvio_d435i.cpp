@@ -47,6 +47,7 @@
 // If mainSettings.calib is set we use this instead of the factory calibration.
 std::string calibSavePath = "./factoryCalibrationT265Camera.txt"; // Factory calibration will be saved here.
 std::string camchainSavePath = ""; // Factory camchain will be saved here if set.
+bool useSampleOutput = true;
 
 int start = 2;
 
@@ -82,9 +83,7 @@ void exitThread()
 void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
 {
     bool linearizeOperation = false;
-    std::cout << "Initialize FullSystem" << std::endl;
     auto fullSystem = std::make_unique<FullSystem>(linearizeOperation, imuCalibration, imuSettings);
-    std::cout << "Finish Initialize FullSystem" << std::endl;
 
     if(setting_photometricCalibration > 0 && undistorter->photometricUndist == nullptr)
     {
@@ -109,12 +108,9 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
     int ii = 0;
     int lastResetIndex = 0;
 
-    std::cout << "Reaching loop" << std::endl;
     while(true)
     {
         // Skip the first few frames if the start variable is set.
-        std::cout << "  frameContainergetIframeContainermageAndIMUData " << start << std::endl;
-
         if(start > 0 && ii < start)
         {
             auto pair = frameContainer.getImageAndIMUData();
@@ -123,11 +119,8 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
             continue;
         }
 
-
-        std::cout << "getImageAndIMUData " << start << std::endl;
         auto pair = frameContainer.getImageAndIMUData(frameSkipping.getMaxSkipFrames(frameContainer.getQueueSize()));
 
-        std::cout << "Adding image and imu to fullsystem " << std::endl;
         fullSystem->addActiveFrame(pair.first.get(), ii, &(pair.second), nullptr);
 
         if(fullSystem->initFailed || setting_fullResetRequested)
@@ -136,13 +129,9 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
             {
                 printf("RESETTING!\n");
                 std::vector<IOWrap::Output3DWrapper*> wraps = fullSystem->outputWrapper;
-                std::cout << "/* fullSystem.reset(); */" << std::endl;
                 fullSystem.reset();
-                std::cout << "/* ow->reset() */" << std::endl;
                 for(IOWrap::Output3DWrapper* ow : wraps) ow->reset();
-                std::cout << "/* fullSystem = std::make_unique */" << std::endl;
                 fullSystem = std::make_unique<FullSystem>(linearizeOperation, imuCalibration, imuSettings);
-                std::cout << "Initialize New FullSystem" << std::endl;
                 if(undistorter->photometricUndist != nullptr)
                 {
                     fullSystem->setGammaFunction(undistorter->photometricUndist->getG());
@@ -277,11 +266,9 @@ int main(int argc, char** argv)
         std::cout << "Using factory IMU calibration!" << std::endl;
         imuCalibration = *(realsense.imuCalibration);
     }
-    std::cout << "Finish All Settings" << std::endl;
 
     if(!disableAllDisplay)
     {
-        std::cout << "Pangolin View size is " << wG[0] << hG[0] << std::endl;
         IOWrap::PangolinDSOViewer* viewer = new IOWrap::PangolinDSOViewer(wG[0], hG[0], false, settingsUtil);
 
         boost::thread runThread = boost::thread(boost::bind(run, viewer, undistorter.get()));

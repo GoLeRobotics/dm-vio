@@ -22,3 +22,4 @@ result/
 *run*.sh
 *usedSettingsdso.txt
 *factoryCalibrationT265Camera.txt
+*.pcd

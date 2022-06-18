@@ -79,7 +79,6 @@ void dmvio::RealsenseD435I::start()
 
                 // timestamp is in milliseconds, but shall be in seconds
                 imuInt.addGyrData(data, motion.get_timestamp() / 1000.0);
-                std::cout << " +++ addGyrData" << data[0]  << std::endl;
             }else if(motion &&
                      motion.get_profile().stream_type() == RS2_STREAM_ACCEL &&
                      motion.get_profile().format() == RS2_FORMAT_MOTION_XYZ32F)
@@ -97,7 +96,6 @@ void dmvio::RealsenseD435I::start()
                 }
 
                 imuInt.addAccData(data, motion.get_timestamp() / 1000.0);
-                std::cout << " +++ Acc data" << data[0]  << std::endl;
             }
         }else if(auto fs = frame.as<rs2::frameset>())
         {
@@ -129,7 +127,6 @@ void dmvio::RealsenseD435I::start()
                 }
 
                 auto img = std::make_unique<dso::MinimalImageB>(mat.cols, mat.rows);
-                std::cout << "++++ img" <<  mat.cols << ", " << mat.rows << std::endl;
                 memcpy(img->data, mat.data, mat.rows * mat.cols);
 
                 // timestamp is in milliseconds, but shall be in seconds
@@ -148,7 +145,6 @@ void dmvio::RealsenseD435I::start()
                 lastImgTimestamp = timestamp;
             }
         }
-        std::cout << "Finish realsense callback" << std::endl;
     };
     rs2::context ctx;
     rs2::device_list devices = ctx.query_devices();
