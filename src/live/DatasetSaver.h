@@ -42,24 +42,30 @@ public:
 
     // timestamp in seconds, exposure in milliseconds.
     void addImage(cv::Mat mat, double timestamp, double exposure);
+    void addRGBImage(cv::Mat mat, double timestamp, double exposure);
 
     void addIMUData(double timestamp, std::vector<float> accData, std::vector<float> gyrData);
 
     void saveImagesWorker();
+    void saveRGBImagesWorker();
 
     void end();
 
 private:
     std::string imgSaveFolder;
+    std::string imgRGBSaveFolder;
 
-    std::ofstream timesFile, imuFile;
+    std::ofstream timesFile, timesRGBFile, imuFile;
 
-    std::thread imageSaveThread;
+    std::thread imageSaveThread, imageRGBSaveThread;
 
     // protects image queue.
     std::mutex mutex;
+    std::mutex rgb_mutex;
     std::condition_variable frameArrivedCond;
+    std::condition_variable frameRGBArrivedCond;
     std::deque<std::tuple<cv::Mat, double, double>> imageQueue;
+    std::deque<std::tuple<cv::Mat, double, double>> imageRGBQueue;
 
     bool running = true;
 

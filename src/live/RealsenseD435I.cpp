@@ -13,6 +13,8 @@
 using namespace dmvio;
 using std::vector;
 
+#define ENABLE_COLOR  // enable Color
+
 static cv::Mat frame_to_mat(const rs2::frame& f);
 
 dmvio::RealsenseD435I::RealsenseD435I(FrameContainer& frameContainer, std::string cameraCalibSavePath, DatasetSaver*
@@ -25,6 +27,11 @@ datasetSaver)
     config.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F);
     config.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F);
     config.enable_stream(RS2_STREAM_INFRARED, 1, 640, 480, RS2_FORMAT_Y8, 30);
+    config.enable_stream(RS2_STREAM_INFRARED, 2, 640, 480, RS2_FORMAT_Y8, 30);
+    #ifdef ENABLE_COLOR
+        config.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_BGR8, 30);
+    // config.enable_stream(RS2_STREAM_DEPTH, 640,480,RS2_FORMAT_Z16,30);
+    #endif
     // We don't need the second image, but librealsense only supports querying both cameras.
     // config.enable_stream(RS2_STREAM_INFRARED, 2, RS2_FORMAT_Y8);
 
@@ -109,6 +116,7 @@ void dmvio::RealsenseD435I::start()
 
             double timestamp = vf.get_timestamp();
 
+            bool save_infrared_flag = false;
             // We somehow seem to get each image twice.
             if(undistorter && std::abs(timestamp - lastImgTimestamp) > 0.001)
             {
@@ -124,6 +132,7 @@ void dmvio::RealsenseD435I::start()
                 if(saver)
                 {
                     saver->addImage(mat, timestamp / 1000.0, exposure);
+                    save_infrared_flag = true;
                 }
 
                 auto img = std::make_unique<dso::MinimalImageB>(mat.cols, mat.rows);
@@ -144,6 +153,20 @@ void dmvio::RealsenseD435I::start()
 
                 lastImgTimestamp = timestamp;
             }
+            #ifdef ENABLE_COLOR
+                auto rgbf = fs[2];
+                if(!rgbf.as<rs2::video_frame>())
+                {
+                    std::cout << "Weird Frame, skipping" << std::endl;
+                    return;
+                }
+                if(save_infrared_flag)
+                {
+                    double rgbtimestamp = rgbf.get_timestamp();
+                    cv::Mat rgbmat = frame_to_mat(rgbf);
+                    saver->addRGBImage(rgbmat, rgbtimestamp / 1000.0, 0);
+                }
+            #endif
         }
     };
     rs2::context ctx;

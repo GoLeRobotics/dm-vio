@@ -37,13 +37,17 @@ dmvio::DatasetSaver::DatasetSaver(std::string saveFolder)
     boost::filesystem::create_directory(saveFolder);
     boost::filesystem::path savePath(saveFolder);
     boost::filesystem::create_directory(savePath / "cam0");
+    boost::filesystem::create_directory(savePath / "cam2"); // For RGB Images
 
     imgSaveFolder = (savePath / "cam0").string();
+    imgRGBSaveFolder = (savePath / "cam2").string();
 
     timesFile.open((savePath / "times.txt").string());
+    timesRGBFile.open((savePath / "times_RGB.txt").string());
     imuFile.open((savePath / "imu_orig.txt").string());
 
     imageSaveThread = std::thread{&DatasetSaver::saveImagesWorker, this};
+    imageRGBSaveThread = std::thread{&DatasetSaver::saveRGBImagesWorker, this};
 
 }
 
@@ -82,6 +86,42 @@ void dmvio::DatasetSaver::saveImagesWorker()
     }
 }
 
+void dmvio::DatasetSaver::saveRGBImagesWorker()
+{
+    while(running)
+    {
+        std::tuple<cv::Mat, double, double> tuple;
+        {
+            std::unique_lock<std::mutex> lock(rgb_mutex);
+            while(imageRGBQueue.size() == 0)
+            {
+                if(!running) return;
+                frameRGBArrivedCond.wait(lock);
+            }
+
+            tuple = std::move(imageRGBQueue.front());
+            imageRGBQueue.pop_front();
+
+            if(imageRGBQueue.size() > 1)
+            {
+                std::cout << "Save RGB image queue size: " << imageRGBQueue.size() << std::endl;
+            }
+        }
+
+        double timestamp = std::get<1>(tuple);
+        long long id = static_cast<long long>(timestamp * 1e9);
+
+        std::stringstream filename;
+        filename << imgRGBSaveFolder << "/" << id << ".jpg";
+
+        timesRGBFile << id << " " << std::fixed << timestamp << " " << std::get<2>(tuple) << "\n";
+
+        std::vector<int> compression_params = {cv::IMWRITE_JPEG_QUALITY, 99}; // jpg quality.
+        cv::imwrite(filename.str(), std::get<0>(tuple), compression_params);
+    }
+}
+
+
 void dmvio::DatasetSaver::addImage(cv::Mat mat, double timestamp, double exposure)
 {
     {
@@ -89,6 +129,15 @@ void dmvio::DatasetSaver::addImage(cv::Mat mat, double timestamp, double exposur
         imageQueue.emplace_back(mat, timestamp, exposure);
     }
     frameArrivedCond.notify_all();
+}
+
+void dmvio::DatasetSaver::addRGBImage(cv::Mat mat, double timestamp, double exposure)
+{
+    {
+        std::unique_lock<std::mutex> lock(rgb_mutex);
+        imageRGBQueue.emplace_back(mat, timestamp, exposure);
+    }
+    frameRGBArrivedCond.notify_all();
 }
 
 void dmvio::DatasetSaver::addIMUData(double timestamp, std::vector<float> accData, std::vector<float> gyrData)
