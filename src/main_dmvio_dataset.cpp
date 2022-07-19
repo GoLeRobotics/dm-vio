@@ -55,6 +55,8 @@
 #include "IOWrapper/Pangolin/PangolinDSOViewer.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
 
+namespace dso{
+
 std::string gtFile = "";
 std::string vignette = "";
 std::string gammaCalib = "";
@@ -630,6 +632,10 @@ void run(ImageFolderReader* reader, IOWrap::PangolinDSOViewer* viewer)
 
     printf("EXIT NOW!\n");
 }
+
+
+}
+
 
 int main(int argc, char** argv)
 {

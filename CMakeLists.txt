@@ -1,7 +1,8 @@
 SET(PROJECT_NAME DMVIO)
 
 PROJECT(${PROJECT_NAME})
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+
 
 IF(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -18,6 +19,8 @@ find_package(Eigen3 REQUIRED)
 find_package(Boost COMPONENTS system thread filesystem chrono serialization date_time timer)
 find_package(GTSAM REQUIRED)
 find_package(yaml-cpp REQUIRED)
+
+find_package(realsense2 QUIET)
 
 IF(${Boost_VERSION} GREATER_EQUAL 106500)
     message("Building with stacktrace support.")
@@ -41,7 +44,7 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 # flags
 add_definitions("-DENABLE_SSE")
 set(CMAKE_CXX_FLAGS
-    "${SSE_FLAGS} -std=c++14"
+    "${SSE_FLAGS}"
 )
 set(CMAKE_CXX_FLAGS_DEBUG
 	"-O2 -g -fno-omit-frame-pointer -DEIGEN_INITIALIZE_MATRICES_WITH_NAN -DDEBUG ${STACKTRACE_DEFINES}"
@@ -52,6 +55,8 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO
 set(CMAKE_CXX_FLAGS_RELEASE
 	"-O3 -DNDEBUG"
 )
+
+set(CMAKE_CXX_STANDARD 14)
 
 if (MSVC)
      set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
@@ -108,6 +113,11 @@ set(dmvio_SOURCE_FILES
         src/IMUInitialization/IMUInitializerLogic.cpp
         src/IMUInitialization/IMUInitializerTransitions.cpp
 		src/GTSAMIntegration/AugmentedScatter.cpp
+		src/live/FrameContainer.cpp
+		src/live/IMUInterpolator.cpp
+        src/util/MainSettings.cpp
+        src/live/FrameSkippingStrategy.cpp
+		src/live/DatasetSaver.cpp
 		)
 
 
@@ -190,13 +200,15 @@ find_package(realsense2 QUIET)
 # build main executable (only if we have both OpenCV and Pangolin)
 if (realsense2_FOUND AND OpenCV_FOUND AND Pangolin_FOUND)
 	message("--- compiling d435i_online.")
-	add_executable(dmvio_d435i ${PROJECT_SOURCE_DIR}/src/main_dmvio_realsense_D435I.cpp)
-	set(DMVIO_LINKED_LIBRARIES boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} gtsam ${YAML_CPP_LIBRARIES} ${STACKTRACE_LIBRARIES})
-    target_link_libraries(dmvio_d435i dmvio ${DMVIO_LINKED_LIBRARIES} ${realsense2_LIBRARY})
-	# message("--- compiling d455_online.")
-	# add_executable(dmvio_d455 ${PROJECT_SOURCE_DIR}/src/main_dmvio_realsense_D455.cpp)
+
+	set(dmvio_t265_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/live/RealsenseT265.cpp)
+	add_executable(dmvio_t265 ${PROJECT_SOURCE_DIR}/src/main_dmvio_t265.cpp ${dmvio_t265_SOURCE_FILES})
+	target_link_libraries(dmvio_t265 dmvio ${DMVIO_LINKED_LIBRARIES} realsense2::realsense2)
+
+	set(dmvio_d435i_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/live/RealsenseD435I.cpp)
+	add_executable(dmvio_d435i ${PROJECT_SOURCE_DIR}/src/main_dmvio_d435i.cpp ${dmvio_d435i_SOURCE_FILES})
 	# set(DMVIO_LINKED_LIBRARIES boost_system cxsparse ${BOOST_THREAD_LIBRARY} ${LIBZIP_LIBRARY} ${Pangolin_LIBRARIES} ${OpenCV_LIBS} gtsam ${YAML_CPP_LIBRARIES} ${STACKTRACE_LIBRARIES})
-	# target_link_libraries(dmvio_d455 dmvio ${DMVIO_LINKED_LIBRARIES} ${realsense2_LIBRARY})
+    target_link_libraries(dmvio_d435i dmvio ${DMVIO_LINKED_LIBRARIES} realsense2::realsense2) # ${realsense2_LIBRARY}
 else()
 	message("--- not building d435i, since either don't have openCV or Pangolin.")
 endif()

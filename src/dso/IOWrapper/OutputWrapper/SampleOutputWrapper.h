@@ -123,11 +123,11 @@ public:
 
                                 pclFile << worldPoint[0] << " " << worldPoint[1] << " " << worldPoint[2] << "\n";
 
-                                printf("[%d] Point Cloud Coordinate> X: %.2f, Y: %.2f, Z: %.2f\n",
-                                       numPCL,
-                                       worldPoint[0],
-                                       worldPoint[1],
-                                       worldPoint[2]);
+                                // printf("[%d] Point Cloud Coordinate> X: %.2f, Y: %.2f, Z: %.2f\n",
+                                //        numPCL,
+                                //        worldPoint[0],
+                                //        worldPoint[1],
+                                //        worldPoint[2]);
 
                                 numPCL++;
                                 isWritePCL = false;
@@ -175,11 +175,11 @@ public:
 
         virtual void publishCamPose(FrameShell* frame, CalibHessian* HCalib) override
         {
-            printf("OUT: Current Frame %d (time %f, internal ID %d). CameraToWorld:\n",
-                   frame->incoming_id,
-                   frame->timestamp,
-                   frame->id);
-            std::cout << frame->camToWorld.matrix3x4() << "\n";
+            // printf("OUT: Current Frame %d (time %f, internal ID %d). CameraToWorld:\n",
+            //        frame->incoming_id,
+            //        frame->timestamp,
+            //        frame->id);
+            // std::cout << frame->camToWorld.matrix3x4() << "\n";
         }
 
 
