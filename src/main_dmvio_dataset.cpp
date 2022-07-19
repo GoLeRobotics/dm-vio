@@ -67,8 +67,8 @@ int start = 0;
 int end = 100000;
 float playbackSpeed = 0;    // 0 for linearize (play as fast as possible, while sequentializing tracking & mapping). otherwise, factor on timestamps.
 bool preload = true;
-int maxPreloadImages = 10; // If set we only preload if there are less images to be loade.
-bool useSampleOutput = true;
+int maxPreloadImages = 100; // If set we only preload if there are less images to be loade.
+bool useSampleOutput = false;
 
 
 int mode = 0;
