@@ -35,6 +35,7 @@
 #include "IOWrapper/Output3DWrapper.h"
 #include "IOWrapper/ImageDisplay.h"
 
+#include <opencv2/core.hpp>
 
 #include <boost/thread.hpp>
 #include "dso/util/settings.h"
@@ -49,9 +50,12 @@
 #include "FullSystem/PixelSelector2.h"
 
 #include <util/SettingsUtil.h>
+#include <opencv2/highgui.hpp>
 
 #include "IOWrapper/Pangolin/PangolinDSOViewer.h"
 #include "IOWrapper/OutputWrapper/SampleOutputWrapper.h"
+
+namespace dso{
 
 std::string gtFile = "";
 std::string vignette = "";
@@ -64,8 +68,8 @@ bool reverse = false;
 int start = 0;
 int end = 100000;
 float playbackSpeed = 0;    // 0 for linearize (play as fast as possible, while sequentializing tracking & mapping). otherwise, factor on timestamps.
-bool preload = false;
-int maxPreloadImages = 0; // If set we only preload if there are less images to be loade.
+bool preload = true;
+int maxPreloadImages = 100; // If set we only preload if there are less images to be loade.
 bool useSampleOutput = false;
 
 
@@ -606,7 +610,14 @@ void run(ImageFolderReader* reader, IOWrap::PangolinDSOViewer* viewer)
         tmlog.flush();
         tmlog.close();
     }
-
+    if (!isPCLfileClose)
+    {
+        ((IOWrap::SampleOutputWrapper*)fullSystem->outputWrapper[1])->pclFile.flush();
+        ((IOWrap::SampleOutputWrapper*)fullSystem->outputWrapper[1])->pclFile.close();
+        isPCLfileClose = true;
+        printf("pcl tmp file is auto closed.\n");
+    }
+    while(1){ if(dso::IOWrap::waitKey(100)==27)break; }
     for(IOWrap::Output3DWrapper* ow : fullSystem->outputWrapper)
     {
         ow->join();
@@ -621,6 +632,10 @@ void run(ImageFolderReader* reader, IOWrap::PangolinDSOViewer* viewer)
 
     printf("EXIT NOW!\n");
 }
+
+
+}
+
 
 int main(int argc, char** argv)
 {

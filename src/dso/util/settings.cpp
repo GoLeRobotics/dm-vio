@@ -212,7 +212,12 @@ bool multiThreading = true;
 bool disableAllDisplay = false;
 bool setting_logStuff = true;
 
-
+int numPCL = 0;
+bool isSavePCL = true;
+bool isWritePCL = false;
+bool isPCLfileClose = false;
+std::string strTmpPCDFileName = "pcl_data_tmp.pcd";
+std::string strSavePCDFileName = "pcl_data.pcd";
 
 bool goStepByStep = false;
 

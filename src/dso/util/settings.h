@@ -188,8 +188,12 @@ extern bool setting_debugout_runquiet;
 extern bool disableAllDisplay;
 
 
-
-
+extern bool isSavePCL;
+extern bool isPCLfileClose;
+extern bool isWritePCL;
+extern int numPCL;
+extern std::string strTmpPCDFileName;
+extern std::string strSavePCDFileName;
 
 
 extern bool debugSaveImages;

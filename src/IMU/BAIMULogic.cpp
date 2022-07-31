@@ -396,7 +396,10 @@ void dmvio::BAIMULogic::acceptUpdate(gtsam::Values::shared_ptr values, gtsam::Va
     if(optimizeScale && !scaleFixed)
     {
         double newScale = transformDSOToIMU->getScale();
-        std::cout << "Optimized scale: " << newScale << end;
+        if(!dso::setting_debugout_runquiet)
+        {
+            std::cout << "Optimized scale: " << newScale << end;
+        }
         if(newScale > maxScaleInterval)
         {
             maxScaleInterval = newScale;
@@ -409,7 +412,7 @@ void dmvio::BAIMULogic::acceptUpdate(gtsam::Values::shared_ptr values, gtsam::Va
     if(optimizeIMUExtrinsics)
     {
         gtsam::Pose3 newT_cam_imu = newValues->at<gtsam::Pose3>(Symbol('i', 0));
-        std::cout << "Optimized T_cam_imu: " << newT_cam_imu.translation().transpose() << end;
+        std::cout << "Optimized T_cam_imu: " << newT_cam_imu.translation().transpose() << std::endl;
     }
 }
 
@@ -449,7 +452,7 @@ void dmvio::BAIMULogic::finishKeyframeOperations(int keyframeId)
         // We also have computed bias covariance.
         baBiasFile << ' ' << biasCovariance.diagonal().transpose();
     }
-    baBiasFile << end;
+    baBiasFile << std::endl;
 
     if(optimizeScale && !scaleFixed)
     {
@@ -599,15 +602,15 @@ gtsam::LinearContainerFactor::shared_ptr BAIMULogic::computeFactorForCoarseGraph
 
     // Print covariances to file.
     scaleFile << std::fixed << std::setprecision(6) << baIntegration->getCurrBaTimestamp() << ' '
-              << transformDSOToIMU->getScale() << ' ' << uncertainties[0](0, 0) << end;
+              << transformDSOToIMU->getScale() << ' ' << uncertainties[0](0, 0) << std::endl;
 
     Eigen::Vector3d rotLog = transformDSOToIMU->getR_dsoW_metricW().log();
     baGravDirFile << std::fixed << std::setprecision(6) << baIntegration->getCurrBaTimestamp() << ' '
-                  << rotLog.transpose() << ' ' << uncertainties[1].diagonal().transpose() << end;
+                  << rotLog.transpose() << ' ' << uncertainties[1].diagonal().transpose() << std::endl;
 
     baVelFile << std::fixed << std::setprecision(6) << baIntegration->getCurrBaTimestamp() << ' ' <<
               baIntegration->getBaValues()->at<gtsam::Vector3>(velKey).transpose() << ' '
-              << uncertainties[uncertOrdering.size() + 1].diagonal().transpose() << end;
+              << uncertainties[uncertOrdering.size() + 1].diagonal().transpose() << std::endl;
 
     // Now marginalize everything in uncertOrdering, because these variables shall not be in the factor for the coarse graph.
     int secondASize = std::accumulate(factorOrdering.begin(), factorOrdering.end(), 0, accumFun);

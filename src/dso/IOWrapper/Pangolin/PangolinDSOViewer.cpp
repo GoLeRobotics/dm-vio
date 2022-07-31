@@ -41,8 +41,9 @@ namespace IOWrap
 
 
 
-PangolinDSOViewer::PangolinDSOViewer(int w, int h, bool startRunThread, std::shared_ptr<dmvio::SettingsUtil> settingsUtilPassed)
-        : HCalib(0), settingsUtil(std::move(settingsUtilPassed))
+PangolinDSOViewer::PangolinDSOViewer(int w, int h, bool startRunThread, std::shared_ptr<dmvio::SettingsUtil>
+        settingsUtilPassed, std::shared_ptr<double> normalizeCamSize)
+        : HCalib(0), settingsUtil(std::move(settingsUtilPassed)), normalizeCamSize(normalizeCamSize)
 {
 	this->w = w;
 	this->h = h;
@@ -156,7 +157,7 @@ void PangolinDSOViewer::run()
 
 
 	pangolin::Var<bool> settings_resetButton("ui.Reset",false,false);
-
+    pangolin::Var<bool> settings_savePCButton("ui.savePointCloud",false,false);
 
 	pangolin::Var<int> settings_nPts("ui.activePoints",setting_desiredPointDensity, 50,5000, false);
 	pangolin::Var<int> settings_nCandidates("ui.pointCandidates",setting_desiredImmatureDensity, 50,5000, false);
@@ -167,6 +168,8 @@ void PangolinDSOViewer::run()
 	pangolin::Var<double> settings_trackFps("ui.Track fps",0,0,0,false);
 	pangolin::Var<double> settings_mapFps("ui.KF fps",0,0,0,false);
 
+    pangolin::Var<double> settings_Scale("ui.Scale", 1, 0, 0, false);
+    pangolin::Var<std::string> setting_SystemStatus("ui.Status", "");
 
 
     if(settingsUtil)
@@ -183,27 +186,39 @@ void PangolinDSOViewer::run()
 
 		if(setting_render_display3D)
 		{
+            double sizeFactor = 1.0;
+
 			// Activate efficiently by object
 			Visualization3D_display.Activate(Visualization3D_camera);
 			boost::unique_lock<boost::mutex> lk3d(model3DMutex);
+
+            // Normalize cam size with scale.
+            if(transformDSOToIMU && normalizeCamSize && *normalizeCamSize > 0)
+            {
+                sizeFactor = *normalizeCamSize / transformDSOToIMU->getScale();
+            }
+
 			//pangolin::glDrawColouredCube();
 			int refreshed=0;
 			for(KeyFrameDisplay* fh : keyframes)
 			{
 				float blue[3] = {0,0,1};
-				if(this->settings_showKFCameras) fh->drawCam(1,blue,0.1);
+				if(this->settings_showKFCameras) fh->drawCam(1,blue,0.1 * sizeFactor);
 
 
 				refreshed += (int)(fh->refreshPC(refreshed < 10, this->settings_scaledVarTH, this->settings_absVarTH,
 						this->settings_pointCloudMode, this->settings_minRelBS, this->settings_sparsity));
 				fh->drawPC(1);
 			}
-			if(this->settings_showCurrentCamera) currentCam->drawCam(2,0,0.2);
+			if(this->settings_showCurrentCamera) currentCam->drawCam(2,0,0.2 * sizeFactor);
 
 			float green[3] = {0,1,0};
-			currentGTCam->drawCam(2, green, 0.2);
+            if(gtCamPoseSet)
+            {
+                currentGTCam->drawCam(2, green, 0.2 * sizeFactor);
+            }
 
-			drawConstraints();
+            drawConstraints();
 			lk3d.unlock();
 		}
 
@@ -235,6 +250,26 @@ void PangolinDSOViewer::run()
 			model3DMutex.unlock();
 		}
 
+        // Update scale and status text.
+        {
+            boost::unique_lock<boost::mutex> lk(model3DMutex);
+            if(transformDSOToIMU)
+            {
+                settings_Scale = transformDSOToIMU->getScale();
+            }
+            switch(systemStatus)
+            {
+                case dmvio::VISUAL_INIT:
+                    setting_SystemStatus = "Visual-init";
+                    break;
+                case dmvio::VISUAL_ONLY:
+                    setting_SystemStatus = "Visual-only";
+                    break;
+                case dmvio::VISUAL_INERTIAL:
+                    setting_SystemStatus = "VIO";
+                    break;
+            }
+        }
 
 		if(setting_render_displayVideo)
 		{
@@ -302,6 +337,60 @@ void PangolinDSOViewer::run()
 	    	setting_fullResetRequested = true;
 	    }
 
+        if(settings_savePCButton.Get())
+        {
+            printf("Saving [%d] Point Cloud Data....\n", numPCL);
+            settings_savePCButton.Reset();
+
+            while (1)
+            {
+                if (!isWritePCL)
+                {
+                    isSavePCL = false;
+                    break;
+                }
+
+                boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+            }
+
+
+            while (1)
+            {
+                if (isPCLfileClose)
+                {
+                    std::ofstream finalFile(strSavePCDFileName);
+                    finalFile << std::string("# .PCD v.6 - Point Cloud Data file format\n");
+                    finalFile << std::string("FIELDS x y z\n");
+                    finalFile << std::string("SIZE 4 4 4\n");
+                    finalFile << std::string("TYPE F F F\n");
+                    finalFile << std::string("COUNT 1 1 1\n");
+                    finalFile << std::string("WIDTH ") << numPCL << std::string("\n");
+                    finalFile << std::string("HEIGHT 1\n");
+                    finalFile << std::string("#VIEWPOINT 0 0 0 1 0 0 0\n");
+                    finalFile << std::string("POINTS ") << numPCL << std::string("\n");
+                    finalFile << std::string("DATA ascii\n");
+
+                    std::ifstream savedFile(strTmpPCDFileName);
+
+                    while (!savedFile.eof())
+                    {
+                        finalFile.put(savedFile.get());
+                    }
+
+                    finalFile.close();
+                    savedFile.close();
+
+                    printf("PCL File for 'pcl_data.pcd' is saved.\n");
+
+                    break;
+                }
+
+                boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
+            }
+
+
+        }
+
 		// Swap frames and Process Events
 		pangolin::FinishFrame();
 
@@ -347,7 +436,9 @@ void PangolinDSOViewer::reset_internal()
 	keyframesByKFID.clear();
 	connections.clear();
 	model3DMutex.unlock();
-
+    isSavePCL = true;
+    isPCLfileClose = false;
+    numPCL = 0;
 
 	openImagesMutex.lock();
 	internalVideoImg->setBlack();
@@ -578,6 +669,12 @@ void PangolinDSOViewer::publishTransformDSOToIMU(const dmvio::TransformDSOToIMU&
     boost::unique_lock<boost::mutex> lk(model3DMutex);
     transformDSOToIMU = std::make_unique<dmvio::TransformDSOToIMU>(transformDSOToIMUPassed, std::make_shared<bool>(false),
             std::make_shared<bool>(false), std::make_shared<bool>(false));
+}
+
+void PangolinDSOViewer::publishSystemStatus(dmvio::SystemStatus systemStatus)
+{
+    boost::unique_lock<boost::mutex> lk(model3DMutex);
+    this->systemStatus = systemStatus;
 }
 
 void PangolinDSOViewer::addGTCamPose(const Sophus::SE3& gtPose)
