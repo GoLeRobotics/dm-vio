@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="dm-vio" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="dm-vio">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/ran/work/dm-vio" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="dm-vio (ece042c6-eb54-49cd-93f4-de88595e49ba)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.ZfjOusJDzA" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release-dm-vio" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug-dm-vio" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="orbslam3 (0f6318c4-8fbf-498d-abaa-3a2049fe8694)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.sOmFpaC9uj" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

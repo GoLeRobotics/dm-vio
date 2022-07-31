@@ -1,0 +1,593 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "bin/dmvio_dataset"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_libraries",
+			"add_definitions",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 182,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 184,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 43,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 115,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 168,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 143,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -std=c++14 -O3 -DNDEBUG"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 3,
+					"define" : "ENABLE_SSE"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "/tmp/tmp.ZfjOusJDzA/src"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/tmp/tmp.ZfjOusJDzA/src/dso"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/tmp/tmp.ZfjOusJDzA/thirdparty/Sophus"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/tmp/tmp.ZfjOusJDzA/thirdparty/sse2neon"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/usr/include/suitesparse"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/usr/local/include/eigen3"
+				},
+				{
+					"backtrace" : 6,
+					"isSystem" : true,
+					"path" : "/usr/include/opencv"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "dmvio::@6890427a1f51a3e7e1df"
+		}
+	],
+	"id" : "dmvio_dataset::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-std=c++14 -O3 -DNDEBUG",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-rdynamic",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "-Wl,-rpath,/usr/local/lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "lib/libdmvio.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-lboost_system",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-lcxsparse",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-lboost_thread",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/local/lib/libpangolin.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_stitching.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_superres.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_videostab.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_aruco.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_bgsegm.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_bioinspired.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_ccalib.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_dnn_objdetect.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_dpm.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_face.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_freetype.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_fuzzy.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_hfs.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_img_hash.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_line_descriptor.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_optflow.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_reg.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_rgbd.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_saliency.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_sfm.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_stereo.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_structured_light.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_surface_matching.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_tracking.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_xfeatures2d.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_ximgproc.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/local/lib/libgtsam.so.4.0.0",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libyaml-cpp.so.0.5.2",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lrt",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lpthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lOpenGL",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGLX",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGLU",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGLEW",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lEGL",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lSM",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lICE",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lX11",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lXext",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lrt",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lpthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lOpenGL",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGLX",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGLU",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lGLEW",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lEGL",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lSM",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lICE",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lX11",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lXext",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lpng",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lz",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ljpeg",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ltiff",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_shape.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_phase_unwrapping.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_video.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_datasets.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_plot.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_text.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_dnn.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_ml.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_objdetect.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_calib3d.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_features2d.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_flann.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_highgui.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_videoio.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_imgcodecs.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_photo.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_imgproc.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/x86_64-linux-gnu/libopencv_core.so.3.4.5",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lboost_serialization",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lboost_system",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lboost_filesystem",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lboost_thread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lboost_date_time",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lboost_timer",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lboost_chrono",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ltbb",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ltbbmalloc",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/local/lib/libmetis.so",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lm",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "dmvio_dataset",
+	"nameOnDisk" : "dmvio_dataset",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/main_dmvio_dataset.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}
