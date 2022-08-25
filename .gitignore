@@ -1,7 +1,7 @@
 build
 build_debug
 .vscode
-
+.idea
 
 logs/
 result/
