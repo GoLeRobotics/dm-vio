@@ -43,6 +43,7 @@
 #include "FullSystem/PixelSelector2.h"
 #include "IMU/IMUIntegration.hpp"
 #include "util/GTData.hpp"
+#include "live/FrameContainer.h"
 
 #include <math.h>
 #include "IMUInitialization/GravityInitializer.h"
@@ -152,6 +153,9 @@ public:
 
 	void printResult(std::string file, bool onlyLogKFPoses, bool saveMetricPoses, bool useCamToTrackingRef);
 
+	std::pair<Eigen::Vector3d, Eigen::Quaterniond> CalcPQ();
+	dmvio::IMUData& CalcIMU(dmvio::IMUData& imuData);
+
 	void debugPlot(std::string name);
 
 	void printFrameLifetimes();
@@ -235,7 +239,6 @@ private:
 			std::vector<VecX> &nullspaces_affB);
 
 	void setNewFrameEnergyTH();
-
 
 	void printLogLine();
 	void printEvalLine();

@@ -207,12 +207,15 @@ void dmvio::MainSettings::settingsDefault(int preset)
 
         playbackSpeed = (preset == 0 ? 0 : 1.0);
         preload = preset == 1;
-        setting_desiredImmatureDensity = 1500;
-        setting_desiredPointDensity = 1000;
-        setting_minFrames = 5;
-        setting_maxFrames = 7;
+        setting_desiredImmatureDensity = 50;
+        setting_desiredPointDensity = 50;
+        setting_minFrames = 4;
+        setting_maxFrames = 6;
         setting_maxOptIterations = 6;
         setting_minOptIterations = 1;
+
+        benchmarkSetting_width = 320;
+        benchmarkSetting_height = 240;
 
         setting_logStuff = false;
     }

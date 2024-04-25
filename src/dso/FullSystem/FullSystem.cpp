@@ -58,8 +58,10 @@
 
 #include "util/TimeMeasurement.h"
 #include "GTSAMIntegration/ExtUtils.h"
+#include "live/FrameContainer.h"
 
 using dmvio::GravityInitializer;
+using dmvio::IMUIntegration;
 
 namespace dso
 {
@@ -293,6 +295,39 @@ void FullSystem::printResult(std::string file, bool onlyLogKFPoses, bool saveMet
 			" " << camToFirst.unit_quaternion().w() << "\n";
 	}
 	myfile.close();
+}
+
+std::pair<Eigen::Vector3d, Eigen::Quaterniond> FullSystem::CalcPQ()
+{
+	boost::unique_lock<boost::mutex> lock(trackMutex);
+	boost::unique_lock<boost::mutex> crlock(shellPoseMutex);
+
+	Eigen::Vector3d p;
+	Eigen::Quaterniond quat;
+	for(FrameShell* s : allFrameHistory)
+	{
+		if(!s->poseValid) continue;
+
+        Sophus::SE3 camToWorld = s->camToWorld;
+        Sophus::SE3 camToFirst = firstPose.inverse() * camToWorld;
+
+		p = camToFirst.translation().transpose();
+		quat = camToFirst.so3().unit_quaternion();
+		// std::cout << "p : " << p << ", quat : " << quat << std::endl;
+	}
+	return std::make_pair(p, quat);
+}
+
+dmvio::IMUData& FullSystem::CalcIMU(dmvio::IMUData& imuData)
+{
+	for(int i = 0; i < imuData.size(); ++i)
+        {
+            Eigen::Vector3d acc = imuData[i].getAccData();
+            Eigen::Vector3d gyr = imuData[i].getGyrData();
+
+            // std::cout << "acc : " << acc << ", gyr : " << gyr << std::endl;
+        }
+	return imuData;
 }
 
 std::pair<Vec4, bool> FullSystem::trackNewCoarse(FrameHessian* fh, Sophus::SE3 *referenceToFrameHint)
@@ -987,7 +1022,7 @@ void FullSystem::addActiveFrame(ImageAndExposure* image, int id, dmvio::IMUData*
         }
 		return;
 	}
-	else	// do front-end operation.
+	else	// once initialized, do front-end operation.
 	{
 	    // --------------------------  Coarse tracking (after visual initializer succeeded). --------------------------
         dmvio::TimeMeasurement coarseTrackingTime("fullCoarseTracking");

@@ -48,6 +48,7 @@
 std::string calibSavePath = "./factoryCalibrationT265Camera.txt"; // Factory calibration will be saved here.
 std::string camchainSavePath = ""; // Factory camchain will be saved here if set.
 bool useSampleOutput = true;
+bool m_break = false;
 
 int start = 2;
 
@@ -66,6 +67,12 @@ void my_exit_handler(int s)
 {
     printf("Caught signal %d\n", s);
     exit(1);
+}
+
+void OnSignal(int sig)
+{
+    signal(sig, SIG_IGN);
+    m_break = true;
 }
 
 void exitThread()
@@ -96,7 +103,7 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
         fullSystem->setGammaFunction(undistorter->photometricUndist->getG());
     }
 
-    if(viewer != 0)
+    if(viewer != 0) // if viewer option enable
     {
         fullSystem->outputWrapper.push_back(viewer);
     }
@@ -126,10 +133,31 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
         }
 
         auto pair = frameContainer.getImageAndIMUData(frameSkipping.getMaxSkipFrames(frameContainer.getQueueSize()));
+        Eigen::Vector3d translation = fullSystem->CalcPQ().first;
+        Eigen::Quaterniond quat = fullSystem->CalcPQ().second;
+        dmvio::IMUData& imuData = fullSystem->CalcIMU(pair.second);
+
+        double px, py, pz, qx, qy, qz, qw = 0;
+        std::Vector3d acc, gyr;
+        px += translation[0];
+        py += translation[1];
+        pz += translation[2];
+        px += Quaterniond.x();
+        py += Quaterniond.y();
+        pz += Quaterniond.z();
+        qw += Quaterniond.w();
+        acc = imuData.getAccData();
+        gyr = imuData.getGyrData();
+
+        // std::cout << "p : " << translation << ", quat : " << quat << std::endl;
+        // for(int i = 0; i < imuData.size(); ++i)
+        // {
+        //     std::cout << "acc : " << imuData[i].getAccData() << ", gyr : " << imuData[i].getGyrData() << std::endl;
+        // }
 
         fullSystem->addActiveFrame(pair.first.get(), ii, &(pair.second), nullptr);
 
-        if(fullSystem->initFailed || setting_fullResetRequested)
+        if(fullSystem->initFailed || setting_fullResetRequested) // if reset requested
         {
             if(ii - lastResetIndex < 250 || setting_fullResetRequested)
             {
@@ -161,6 +189,14 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
             break;
         }
 
+        // hook ctrl+C.
+        signal(SIGINT, OnSignal);
+        if (m_break)
+        {
+            std::cout << "hook crtl c, break" << std::endl;
+            break;
+        }
+
         ++ii;
 
     }
@@ -178,7 +214,7 @@ void run(IOWrap::PangolinDSOViewer* viewer, Undistort* undistorter)
         isPCLfileClose = true;
         printf("pcl tmp file is auto closed.\n");
     }
-    
+
     for(IOWrap::Output3DWrapper* ow : fullSystem->outputWrapper)
     {
         ow->join();

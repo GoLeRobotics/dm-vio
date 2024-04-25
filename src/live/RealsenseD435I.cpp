@@ -26,10 +26,10 @@ datasetSaver)
 
     config.enable_stream(RS2_STREAM_ACCEL, RS2_FORMAT_MOTION_XYZ32F);
     config.enable_stream(RS2_STREAM_GYRO, RS2_FORMAT_MOTION_XYZ32F);
-    config.enable_stream(RS2_STREAM_INFRARED, 1, 640, 480, RS2_FORMAT_Y8, 30);
-    config.enable_stream(RS2_STREAM_INFRARED, 2, 640, 480, RS2_FORMAT_Y8, 30);
+    config.enable_stream(RS2_STREAM_INFRARED, 1, 640, 480, RS2_FORMAT_Y8, 0);
+    config.enable_stream(RS2_STREAM_INFRARED, 2, 640, 480, RS2_FORMAT_Y8, 0);
     #ifdef ENABLE_COLOR
-        config.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_BGR8, 30);
+        config.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_BGR8, 0);
     // config.enable_stream(RS2_STREAM_DEPTH, 640,480,RS2_FORMAT_Z16,30);
     #endif
     // We don't need the second image, but librealsense only supports querying both cameras.
@@ -62,6 +62,9 @@ datasetSaver)
 
 void dmvio::RealsenseD435I::start()
 {
+    double sum_of_ts = 0;
+    int ts_cnt = 0;
+    double ts = 0;
     auto callback = [&](const rs2::frame& frame)
     {
         if(!calibrationRead) return;
@@ -77,6 +80,7 @@ void dmvio::RealsenseD435I::start()
                 data[0] = motionData.x;
                 data[1] = motionData.y;
                 data[2] = motionData.z;
+                // std::cout << "data : " << data[0] << ", " << data[1] << ", " << data[2] << std::endl;
 
                 // Multiply by factory calibration scale and subtract bias.
                 for(int i = 0; i < 3; ++i)
@@ -115,6 +119,18 @@ void dmvio::RealsenseD435I::start()
             auto vf = f.as<rs2::video_frame>();
 
             double timestamp = vf.get_timestamp();
+
+            double time_diff = std::abs(timestamp - lastImgTimestamp);
+            sum_of_ts += time_diff;
+            ++ts_cnt;
+            if (timestamp - ts >= 1000)
+            {
+                std::cout << "fps : " << 1000 / (sum_of_ts / ts_cnt) << std::endl;
+
+                sum_of_ts = 0;
+                ts_cnt = 0;
+                ts = timestamp;
+            }
 
             bool save_infrared_flag = false;
             // We somehow seem to get each image twice.

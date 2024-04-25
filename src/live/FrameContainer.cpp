@@ -70,6 +70,7 @@ dmvio::FrameContainer::getImageAndIMUData(int maxSkipFrames)
             {
                 acc(x) = data[i].accData[x];
                 gyr(x) = data[i].gyrData[x];
+                // std::cout << "acc : " << acc(x) << ", gyr : " << gyr(x) << std::endl;
             }
 
             double integrationTime = 0.0;

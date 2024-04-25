@@ -61,6 +61,7 @@ Sophus::SE3d dmvio::CoarseIMULogic::addIMUData(const dmvio::IMUData& imuData, in
     gtsam::imuBias::ConstantBias currentBias = coarseValues->at<gtsam::imuBias::ConstantBias>(
             gtsam::Symbol('b', lastFrameId));
     gtsam::Vector3 currentVelocity = coarseValues->at<gtsam::Vector3>(gtsam::Symbol('v', lastFrameId));
+    std::cout << "currentPose :" << currentPose << ", currenct Velocity : " << currentVelocity << std::endl;
 
     // Select factors to marginalize out. We want to keep in the graph keyframe pose, previous and current states. We also want to keep the prepared keyframe pose
     gtsam::FastVector<gtsam::Key> keysToMarginalize;
